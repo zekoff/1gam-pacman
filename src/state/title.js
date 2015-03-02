@@ -1,11 +1,7 @@
-define(['phaser'], function(Phaser) {
+define(['phaser','state/main'], function(Phaser, MainState) {
     var state = new Phaser.State();
     state.create = function() {
-        state.game.stage.backgroundColor = 0xFFFFFF;
-        var map = state.add.tilemap('test');
-        map.addTilesetImage('test-tiles', 'tiles');
-        var layer = map.createLayer('collision');
-        map.setCollision(1, true, layer);
+        state.game.state.add('main', MainState, true);
     };
     state.update = function() {};
     return state;

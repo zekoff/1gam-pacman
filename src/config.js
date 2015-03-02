@@ -1,4 +1,3 @@
 define({
-    xTiles: 29,
-    yTiles: 26
+    playerSpeed: 128
 });
