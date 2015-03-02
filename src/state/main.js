@@ -48,6 +48,7 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
             if (turned) {
                 player.x = currentTile.x + Const.TILE_SIZE / 2;
                 player.y = currentTile.y + Const.TILE_SIZE / 2;
+                player.body.reset(player.x, player.y);
             }
             if (newDirection)
                 direction = newDirection;
