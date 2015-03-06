@@ -1,6 +1,7 @@
 define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
     var state = new Phaser.State();
     var player;
+    var map;
     var collisionLayer;
     var pickupsLayer;
     var cursors;
@@ -10,7 +11,7 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
     var threshold = 3;
     state.create = function() {
         state.game.stage.backgroundColor = 0xFFFFFF;
-        var map = state.add.tilemap('test');
+        map = state.add.tilemap('test');
         map.addTilesetImage('test-tiles', 'tiles');
         collisionLayer = map.createLayer('collision');
         map.setCollision(1, true, collisionLayer);
@@ -33,6 +34,10 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
         if (state.math.fuzzyEqual(player.x, currentTile.x + Const.TILE_SIZE / 2, threshold) &&
             state.math.fuzzyEqual(player.y, currentTile.y + Const.TILE_SIZE / 2, threshold)) {
             // ...and target tile is open
+            if (cursors.up.isDown && map.getTileAbove(map.getLayerIndex('collision'), currentTile.x / 32, currentTile.y / 32).isInteresting(true)) return;
+            if (cursors.down.isDown && map.getTileBelow(map.getLayerIndex('collision'), currentTile.x / 32, currentTile.y / 32).isInteresting(true)) return;
+            if (cursors.left.isDown && map.getTileLeft(map.getLayerIndex('collision'), currentTile.x / 32, currentTile.y / 32).isInteresting(true)) return;
+            if (cursors.right.isDown && map.getTileRight(map.getLayerIndex('collision'), currentTile.x / 32, currentTile.y / 32).isInteresting(true)) return;
             // this is just a horrible proof-of-concept
             var newDirection = null;
             if (cursors.up.isDown) newDirection = Phaser.UP;
