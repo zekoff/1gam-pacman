@@ -10,6 +10,10 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
     var direction = Phaser.DOWN;
     var threshold = 3;
     state.create = function() {
+        Phaser.Canvas.setImageRenderingCrisp(state.game.canvas);
+        state.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        state.scale.pageAlignHorizontally = true;
+        state.scale.pageAlignVertically = true;
         state.game.stage.backgroundColor = 0xFFFFFF;
         map = state.add.tilemap('test');
         map.addTilesetImage('test-tiles', 'tiles');
@@ -34,10 +38,10 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
         if (state.math.fuzzyEqual(player.x, currentTile.x + Const.TILE_SIZE / 2, threshold) &&
             state.math.fuzzyEqual(player.y, currentTile.y + Const.TILE_SIZE / 2, threshold)) {
             // ...and target tile is open
-            if (cursors.up.isDown && map.getTileAbove(map.getLayerIndex('collision'), currentTile.x / 32, currentTile.y / 32).isInteresting(true)) return;
-            if (cursors.down.isDown && map.getTileBelow(map.getLayerIndex('collision'), currentTile.x / 32, currentTile.y / 32).isInteresting(true)) return;
-            if (cursors.left.isDown && map.getTileLeft(map.getLayerIndex('collision'), currentTile.x / 32, currentTile.y / 32).isInteresting(true)) return;
-            if (cursors.right.isDown && map.getTileRight(map.getLayerIndex('collision'), currentTile.x / 32, currentTile.y / 32).isInteresting(true)) return;
+            if (cursors.up.isDown && map.getTileAbove(map.getLayerIndex('collision'), currentTile.x / Const.TILE_SIZE, currentTile.y / Const.TILE_SIZE).isInteresting(true)) return;
+            if (cursors.down.isDown && map.getTileBelow(map.getLayerIndex('collision'), currentTile.x / Const.TILE_SIZE, currentTile.y / Const.TILE_SIZE).isInteresting(true)) return;
+            if (cursors.left.isDown && map.getTileLeft(map.getLayerIndex('collision'), currentTile.x / Const.TILE_SIZE, currentTile.y / Const.TILE_SIZE).isInteresting(true)) return;
+            if (cursors.right.isDown && map.getTileRight(map.getLayerIndex('collision'), currentTile.x / Const.TILE_SIZE, currentTile.y / Const.TILE_SIZE).isInteresting(true)) return;
             // this is just a horrible proof-of-concept
             var newDirection = null;
             if (cursors.up.isDown) newDirection = Phaser.UP;

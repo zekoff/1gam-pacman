@@ -1,3 +1,3 @@
 define({
-    playerSpeed: 128
+    playerSpeed: 192
 });
