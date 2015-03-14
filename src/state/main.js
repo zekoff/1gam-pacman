@@ -9,6 +9,7 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
     var currentTile;
     var direction = Phaser.DOWN;
     var threshold = 3;
+    var pickupsGroup;
     state.create = function() {
         Phaser.Canvas.setImageRenderingCrisp(state.game.canvas);
         state.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -20,6 +21,9 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
         collisionLayer = map.createLayer('collision');
         map.setCollision(1, true, collisionLayer);
         pickupsLayer = map.createLayer('pickups');
+        pickupsGroup = state.add.group();
+        map.createFromTiles(4, 0, 'dot', pickupsLayer, pickupsGroup);
+        state.physics.arcade.enable(pickupsGroup);
         player = state.add.sprite(Const.TILE_SIZE * 1.5,
             Const.TILE_SIZE * 1.5, 'badman');
         state.physics.arcade.enable(player);
@@ -83,6 +87,9 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
         currentTile.y = state.math.snapToFloor(Math.floor(player.y),
             Const.TILE_SIZE);
         state.physics.arcade.collide(player, collisionLayer);
+        state.physics.arcade.collide(player, pickupsGroup, function(player, pickup) {
+            pickup.kill();
+        });
     };
     state.render = function() {
         state.game.debug.geom(currentTile, '#F00');
