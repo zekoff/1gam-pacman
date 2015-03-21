@@ -1,4 +1,4 @@
-define(['phaser', 'const', 'config', 'util'], function(Phaser, Const, Config, Util) {
+define(['phaser', 'const', 'config', 'util', 'object/entity'], function(Phaser, Const, Config, Util, Entity) {
     var state = new Phaser.State();
     var player;
     var map;
@@ -6,7 +6,6 @@ define(['phaser', 'const', 'config', 'util'], function(Phaser, Const, Config, Ut
     var pickupsLayer;
     var cursors;
     var currentTile;
-    var threshold = Const.TURN_THRESHOLD_PX;
     var pickupsGroup;
     state.create = function() {
         Phaser.Canvas.setImageRenderingCrisp(state.game.canvas);
@@ -22,23 +21,9 @@ define(['phaser', 'const', 'config', 'util'], function(Phaser, Const, Config, Ut
         pickupsGroup = state.add.group();
         map.createFromTiles(4, 0, 'dot', pickupsLayer, pickupsGroup);
         state.physics.arcade.enable(pickupsGroup);
-        player = state.add.sprite(Const.TILE_SIZE * 1.5,
-            Const.TILE_SIZE * 1.5, 'badman');
-        state.physics.arcade.enable(player);
-        player.anchor.set(0.5);
-        player.body.bounce = 0;
-        player.direction = Phaser.DOWN;
         cursors = state.input.keyboard.createCursorKeys();
-        player.speed = Config.playerSpeed;
-        player.updateVelocity = function() {
-            Util.setEntityVelocity.call(player);
-        };
-        player.snapToTile = function() {
-            Util.snapToTile.call(player);
-        };
-        player.atTurnPoint = function() {
-            return Util.atTurnPoint.call(player);
-        };
+        player = new Entity(state, new Phaser.Point(1, 1), 'badman');
+        state.add.existing(player);
         currentTile = Util.getTilePoint(player);
     };
     state.update = function() {
