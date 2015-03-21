@@ -1,14 +1,12 @@
-define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
+define(['phaser', 'const', 'config', 'util'], function(Phaser, Const, Config, Util) {
     var state = new Phaser.State();
     var player;
     var map;
     var collisionLayer;
     var pickupsLayer;
     var cursors;
-    var speed = Config.playerSpeed;
     var currentTile;
-    var direction = Phaser.DOWN;
-    var threshold = 3;
+    var threshold = Const.TURN_THRESHOLD_PX;
     var pickupsGroup;
     state.create = function() {
         Phaser.Canvas.setImageRenderingCrisp(state.game.canvas);
@@ -27,25 +25,35 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
         player = state.add.sprite(Const.TILE_SIZE * 1.5,
             Const.TILE_SIZE * 1.5, 'badman');
         state.physics.arcade.enable(player);
-        player.anchor.set(0.5); // removing this causes weird placement...
-
+        player.anchor.set(0.5);
+        player.body.bounce = 0;
+        player.direction = Phaser.DOWN;
         cursors = state.input.keyboard.createCursorKeys();
-        currentTile = new Phaser.Point();
+        player.speed = Config.playerSpeed;
+        player.updateVelocity = function() {
+            Util.setEntityVelocity.call(player);
+        };
+        player.snapToTile = function() {
+            Util.snapToTile.call(player);
+        };
+        player.atTurnPoint = function() {
+            return Util.atTurnPoint.call(player);
+        };
+        currentTile = Util.getTilePoint(player);
     };
     state.update = function() {
         // allow reversing direction any time
-        if (cursors.up.isDown && direction === Phaser.DOWN) direction = Phaser.UP;
-        if (cursors.down.isDown && direction === Phaser.UP) direction = Phaser.DOWN;
-        if (cursors.left.isDown && direction === Phaser.RIGHT) direction = Phaser.LEFT;
-        if (cursors.right.isDown && direction === Phaser.LEFT) direction = Phaser.RIGHT;
+        if (cursors.up.isDown && player.direction === Phaser.DOWN) player.direction = Phaser.UP;
+        if (cursors.down.isDown && player.direction === Phaser.UP) player.direction = Phaser.DOWN;
+        if (cursors.left.isDown && player.direction === Phaser.RIGHT) player.direction = Phaser.LEFT;
+        if (cursors.right.isDown && player.direction === Phaser.LEFT) player.direction = Phaser.RIGHT;
         // allow turning if at intersection...
-        if (state.math.fuzzyEqual(player.x, currentTile.x + Const.TILE_SIZE / 2, threshold) &&
-            state.math.fuzzyEqual(player.y, currentTile.y + Const.TILE_SIZE / 2, threshold)) {
+        if (player.atTurnPoint()) {
             // ...and target tile is open
-            if (cursors.up.isDown && map.getTileAbove(map.getLayerIndex('collision'), currentTile.x / Const.TILE_SIZE, currentTile.y / Const.TILE_SIZE).isInteresting(true)) return;
-            if (cursors.down.isDown && map.getTileBelow(map.getLayerIndex('collision'), currentTile.x / Const.TILE_SIZE, currentTile.y / Const.TILE_SIZE).isInteresting(true)) return;
-            if (cursors.left.isDown && map.getTileLeft(map.getLayerIndex('collision'), currentTile.x / Const.TILE_SIZE, currentTile.y / Const.TILE_SIZE).isInteresting(true)) return;
-            if (cursors.right.isDown && map.getTileRight(map.getLayerIndex('collision'), currentTile.x / Const.TILE_SIZE, currentTile.y / Const.TILE_SIZE).isInteresting(true)) return;
+            if (cursors.up.isDown && map.getTileAbove(map.getLayerIndex('collision'), currentTile.x, currentTile.y).isInteresting(true)) return;
+            if (cursors.down.isDown && map.getTileBelow(map.getLayerIndex('collision'), currentTile.x, currentTile.y).isInteresting(true)) return;
+            if (cursors.left.isDown && map.getTileLeft(map.getLayerIndex('collision'), currentTile.x, currentTile.y).isInteresting(true)) return;
+            if (cursors.right.isDown && map.getTileRight(map.getLayerIndex('collision'), currentTile.x, currentTile.y).isInteresting(true)) return;
             // this is just a horrible proof-of-concept
             var newDirection = null;
             if (cursors.up.isDown) newDirection = Phaser.UP;
@@ -54,48 +62,26 @@ define(['phaser', 'const', 'config'], function(Phaser, Const, Config) {
             if (cursors.right.isDown) newDirection = Phaser.RIGHT;
             // if player turned, rectify position to currentTile
             var turned = false;
-            if (direction === Phaser.UP && (newDirection === Phaser.LEFT || newDirection === Phaser.RIGHT)) turned = true;
-            if (direction === Phaser.DOWN && (newDirection === Phaser.LEFT || newDirection === Phaser.RIGHT)) turned = true;
-            if (direction === Phaser.LEFT && (newDirection === Phaser.UP || newDirection === Phaser.DOWN)) turned = true;
-            if (direction === Phaser.RIGHT && (newDirection === Phaser.UP || newDirection === Phaser.DOWN)) turned = true;
-            if (turned) {
-                player.x = currentTile.x + Const.TILE_SIZE / 2;
-                player.y = currentTile.y + Const.TILE_SIZE / 2;
-                player.body.reset(player.x, player.y);
-            }
+            if (player.direction === Phaser.UP && (newDirection === Phaser.LEFT || newDirection === Phaser.RIGHT)) turned = true;
+            if (player.direction === Phaser.DOWN && (newDirection === Phaser.LEFT || newDirection === Phaser.RIGHT)) turned = true;
+            if (player.direction === Phaser.LEFT && (newDirection === Phaser.UP || newDirection === Phaser.DOWN)) turned = true;
+            if (player.direction === Phaser.RIGHT && (newDirection === Phaser.UP || newDirection === Phaser.DOWN)) turned = true;
+            if (turned) player.snapToTile();
             if (newDirection)
-                direction = newDirection;
+                player.direction = newDirection;
         }
-        // move player in correct direction
-        player.body.velocity.set(0);
-        switch (direction) {
-            case Phaser.UP:
-                player.body.velocity.y = -speed;
-                break;
-            case Phaser.DOWN:
-                player.body.velocity.y = speed;
-                break;
-            case Phaser.LEFT:
-                player.body.velocity.x = -speed;
-                break;
-            case Phaser.RIGHT:
-                player.body.velocity.x = speed;
-                break;
-        }
-        currentTile.x = state.math.snapToFloor(Math.floor(player.x),
-            Const.TILE_SIZE);
-        currentTile.y = state.math.snapToFloor(Math.floor(player.y),
-            Const.TILE_SIZE);
+        player.updateVelocity();
+        currentTile = Util.getTilePoint(player);
         state.physics.arcade.collide(player, collisionLayer);
         state.physics.arcade.collide(player, pickupsGroup, function(player, pickup) {
             pickup.kill();
         });
     };
     state.render = function() {
-        state.game.debug.geom(currentTile, '#F00');
+        state.game.debug.geom(Util.tileToWorld(currentTile), '#F00');
         state.game.debug.text("Player X: " + player.x, 20, 20);
         state.game.debug.text("Player Y: " + player.y, 20, 40);
-        state.game.debug.text("Direction: " + direction, 20, 60);
+        state.game.debug.text("Direction: " + player.direction, 20, 60);
         state.game.debug.text("Current Tile X: " + currentTile.x, 20, 80);
         state.game.debug.text("Current Tile Y: " + currentTile.y, 20, 100);
     };
