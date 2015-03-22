@@ -18,45 +18,9 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         player = new Entity(state, new Phaser.Point(1, 1), 'badman');
         state.add.existing(player);
         enemiesGroup = state.add.group();
-        var enemy = new Enemy(state, new Phaser.Point(27, 24), 'badman');
-        enemy.tint = 0x000000;
-        enemiesGroup.add(enemy);
-        enemy.update = function() {
-            if (!enemy.isAtTurnPoint()) return;
-            var exits = Util.detectExits(enemy.getCurrentTilePoint(), map);
-            if (exits.length > 1) {
-                var minimumDistance = Infinity;
-                var bestChoice = null;
-                exits.forEach(function(direction) {
-                    // if (direction === Nav.opposites[enemy.direction]) return;
-                    var testPoint = Util.tileToWorld(enemy.getCurrentTilePoint());
-                    switch (direction) {
-                        case Phaser.LEFT:
-                            testPoint.x--;
-                            break;
-                        case Phaser.RIGHT:
-                            testPoint.x++;
-                            break;
-                        case Phaser.UP:
-                            testPoint.y--;
-                            break;
-                        case Phaser.DOWN:
-                            testPoint.y++;
-                            break;
-                    }
-                    var distance = state.math.distance(testPoint.x, testPoint.y, player.x, player.y);
-                    if (distance < minimumDistance) {
-                        minimumDistance = distance;
-                        bestChoice = direction;
-                    }
-                });
-                if (enemy.direction !== bestChoice) {
-                    enemy.direction = bestChoice;
-                    enemy.snapToTile();
-                }
-            }
-            enemy.updateVelocity();
-        };
+        enemiesGroup.add(new Enemy(state, new Phaser.Point(27, 24), 'badman'));
+        enemiesGroup.add(new Enemy(state, new Phaser.Point(19, 12), 'badman'));
+        enemiesGroup.add(new Enemy(state, new Phaser.Point(12, 17), 'badman'));
     };
     state.update = function() {
         // allow reversing direction any time
@@ -77,7 +41,9 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
                 player.snapToTile();
             }
         }
-        player.updateVelocity();
+        enemiesGroup.forEachAlive(function(enemy) {
+            enemy.seekPlayer(map, player);
+        });
         state.physics.arcade.collide(player, collisionLayer);
         state.physics.arcade.collide(enemiesGroup, collisionLayer);
         state.physics.arcade.collide(player, pickupsGroup, function(player, pickup) {

@@ -24,5 +24,8 @@ define(['phaser', 'util', 'config'], function(Phaser, Util, Config) {
     Entity.prototype.getCurrentTilePoint = function() {
         return Util.getTilePoint.call(this);
     };
+    Entity.prototype.update = function() {
+        this.updateVelocity();
+    };
     return Entity;
 });
