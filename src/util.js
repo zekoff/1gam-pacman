@@ -42,8 +42,24 @@ define(['phaser', 'const'], function(Phaser, Const) {
     util.detectIntersection = function(tilePoint, map) {
 
     };
-    util.exitAvailable = function(tilePoint, map) {
-
+    util.isExitAvailable = function(tilePoint, map, direction) {
+        var target;
+        switch (direction) {
+            case Phaser.UP:
+                target = map.getTileAbove;
+                break;
+            case Phaser.DOWN:
+                target = map.getTileBelow;
+                break;
+            case Phaser.LEFT:
+                target = map.getTileLeft;
+                break;
+            case Phaser.RIGHT:
+                target = map.getTileRight;
+                break;
+        }
+        return !target.call(map, map.getLayerIndex(Const.COLLISION_LAYER),
+            tilePoint.x, tilePoint.y).isInteresting(true);
     };
     util.atTurnPoint = function(tile, entity) {
         if (typeof(entity) === 'undefined') entity = this;

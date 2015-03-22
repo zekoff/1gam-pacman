@@ -2,6 +2,11 @@ define(['phaser', 'state/title'], function(Phaser, TitleState) {
     var state = new Phaser.State();
     state.preload = function() {
         // state.load.image('preload_sprite', 'my_preload_sprite.png');
+        Phaser.Canvas.setImageRenderingCrisp(state.game.canvas);
+        state.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        state.scale.pageAlignHorizontally = true;
+        state.scale.pageAlignVertically = true;
+        state.game.stage.backgroundColor = 0xFFFFFF;
     };
     state.create = function() {
         // set up preload sprite

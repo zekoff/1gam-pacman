@@ -1,68 +1,49 @@
-define(['phaser', 'const', 'config', 'util', 'object/entity'], function(Phaser, Const, Config, Util, Entity) {
+define(['phaser', 'const', 'config', 'util', 'object/entity', 'input'], function(Phaser, Const, Config, Util, Entity, Input) {
     var state = new Phaser.State();
     var player;
     var map;
     var collisionLayer;
-    var pickupsLayer;
-    var cursors;
-    var currentTile;
     var pickupsGroup;
     state.create = function() {
-        Phaser.Canvas.setImageRenderingCrisp(state.game.canvas);
-        state.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        state.scale.pageAlignHorizontally = true;
-        state.scale.pageAlignVertically = true;
-        state.game.stage.backgroundColor = 0xFFFFFF;
         map = state.add.tilemap('test');
         map.addTilesetImage('test-tiles', 'tiles');
         collisionLayer = map.createLayer('collision');
         map.setCollision(1, true, collisionLayer);
-        pickupsLayer = map.createLayer('pickups');
+        var pickupsLayer = map.createLayer('pickups');
         pickupsGroup = state.add.group();
         map.createFromTiles(4, 0, 'dot', pickupsLayer, pickupsGroup);
         state.physics.arcade.enable(pickupsGroup);
-        cursors = state.input.keyboard.createCursorKeys();
+        Input.attachCursors(state);
         player = new Entity(state, new Phaser.Point(1, 1), 'badman');
         state.add.existing(player);
-        currentTile = Util.getTilePoint(player);
     };
     state.update = function() {
         // allow reversing direction any time
-        if (cursors.up.isDown && player.direction === Phaser.DOWN) player.direction = Phaser.UP;
-        if (cursors.down.isDown && player.direction === Phaser.UP) player.direction = Phaser.DOWN;
-        if (cursors.left.isDown && player.direction === Phaser.RIGHT) player.direction = Phaser.LEFT;
-        if (cursors.right.isDown && player.direction === Phaser.LEFT) player.direction = Phaser.RIGHT;
-        // allow turning if at intersection...
-        if (player.atTurnPoint()) {
+        Input.directions.forEach(function(direction) {
+            if (Input.cursors[direction].isDown && player.direction === Input.opposites[direction])
+                player.direction = direction;
+        });
+        if (player.isAtTurnPoint()) {
             // ...and target tile is open
-            if (cursors.up.isDown && map.getTileAbove(map.getLayerIndex('collision'), currentTile.x, currentTile.y).isInteresting(true)) return;
-            if (cursors.down.isDown && map.getTileBelow(map.getLayerIndex('collision'), currentTile.x, currentTile.y).isInteresting(true)) return;
-            if (cursors.left.isDown && map.getTileLeft(map.getLayerIndex('collision'), currentTile.x, currentTile.y).isInteresting(true)) return;
-            if (cursors.right.isDown && map.getTileRight(map.getLayerIndex('collision'), currentTile.x, currentTile.y).isInteresting(true)) return;
-            // this is just a horrible proof-of-concept
+            var currentTile = player.getCurrentTilePoint();
             var newDirection = null;
-            if (cursors.up.isDown) newDirection = Phaser.UP;
-            if (cursors.down.isDown) newDirection = Phaser.DOWN;
-            if (cursors.left.isDown) newDirection = Phaser.LEFT;
-            if (cursors.right.isDown) newDirection = Phaser.RIGHT;
-            // if player turned, rectify position to currentTile
-            var turned = false;
-            if (player.direction === Phaser.UP && (newDirection === Phaser.LEFT || newDirection === Phaser.RIGHT)) turned = true;
-            if (player.direction === Phaser.DOWN && (newDirection === Phaser.LEFT || newDirection === Phaser.RIGHT)) turned = true;
-            if (player.direction === Phaser.LEFT && (newDirection === Phaser.UP || newDirection === Phaser.DOWN)) turned = true;
-            if (player.direction === Phaser.RIGHT && (newDirection === Phaser.UP || newDirection === Phaser.DOWN)) turned = true;
-            if (turned) player.snapToTile();
-            if (newDirection)
+            Input.directions.forEach(function(direction) {
+                if (Input.cursors[direction].isDown && Util.isExitAvailable(currentTile, map, direction))
+                    newDirection = direction;
+            });
+            if (newDirection && newDirection !== player.direction) {
                 player.direction = newDirection;
+                player.snapToTile();
+            }
         }
         player.updateVelocity();
-        currentTile = Util.getTilePoint(player);
         state.physics.arcade.collide(player, collisionLayer);
         state.physics.arcade.collide(player, pickupsGroup, function(player, pickup) {
             pickup.kill();
         });
     };
     state.render = function() {
+        var currentTile = player.getCurrentTilePoint();
         state.game.debug.geom(Util.tileToWorld(currentTile), '#F00');
         state.game.debug.text("Player X: " + player.x, 20, 20);
         state.game.debug.text("Player Y: " + player.y, 20, 40);
