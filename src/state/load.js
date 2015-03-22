@@ -11,7 +11,7 @@ define(['phaser', 'state/title'], function(Phaser, TitleState) {
     state.create = function() {
         // set up preload sprite
         state.load.baseURL = '../assets/';
-        state.load.tilemap('test', 'test_level_2.json', null, Phaser.Tilemap.TILED_JSON);
+        state.load.tilemap('test', 'test_level_3.json', null, Phaser.Tilemap.TILED_JSON);
         state.load.image('tiles', 'test_tiles.png');
         state.load.image('badman', 'badman.png');
         state.load.image('dot', 'dot.png');

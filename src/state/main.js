@@ -7,7 +7,7 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
     var enemiesGroup;
     state.create = function() {
         map = state.add.tilemap('test');
-        map.addTilesetImage('test-tiles', 'tiles');
+        map.addTilesetImage('test_tiles', 'tiles');
         collisionLayer = map.createLayer('collision');
         map.setCollision(1, true, collisionLayer);
         var pickupsLayer = map.createLayer('pickups');
@@ -18,9 +18,9 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         player = new Entity(state, new Phaser.Point(1, 1), 'badman');
         state.add.existing(player);
         enemiesGroup = state.add.group();
-        enemiesGroup.add(new Enemy(state, new Phaser.Point(27, 24), 'badman'));
-        enemiesGroup.add(new Enemy(state, new Phaser.Point(19, 12), 'badman'));
-        enemiesGroup.add(new Enemy(state, new Phaser.Point(12, 17), 'badman'));
+        enemiesGroup.add(new Enemy(state, new Phaser.Point(18, 19), 'badman'));
+        enemiesGroup.add(new Enemy(state, new Phaser.Point(5, 21), 'badman'));
+        // enemiesGroup.add(new Enemy(state, new Phaser.Point(12, 17), 'badman'));
     };
     state.update = function() {
         // allow reversing direction any time
@@ -64,10 +64,12 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         state.game.debug.text("Current Tile Y: " + currentTile.y, 20, 100);
         state.game.debug.body(player);
 
-        state.game.debug.text("Enemy 1 X: " + enemiesGroup.getFirstAlive().x, 20, 140);
-        state.game.debug.text("Enemy 1 Y: " + enemiesGroup.getFirstAlive().y, 20, 160);
-        state.game.debug.text("Direction: " + enemiesGroup.getFirstAlive().direction, 20, 180);
-        state.game.debug.body(enemiesGroup.getFirstAlive());
+        if (enemiesGroup.getFirstAlive()) {
+            state.game.debug.text("Enemy 1 X: " + enemiesGroup.getFirstAlive().x, 20, 140);
+            state.game.debug.text("Enemy 1 Y: " + enemiesGroup.getFirstAlive().y, 20, 160);
+            state.game.debug.text("Direction: " + enemiesGroup.getFirstAlive().direction, 20, 180);
+            state.game.debug.body(enemiesGroup.getFirstAlive());
+        }
     };
     return state;
 });
