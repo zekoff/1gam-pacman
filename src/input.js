@@ -1,11 +1,5 @@
-define(['phaser'], function(Phaser) {
+define(['phaser', 'nav'], function(Phaser, Nav) {
     var input = {};
-    input.directions = [Phaser.LEFT, Phaser.RIGHT, Phaser.UP, Phaser.DOWN];
-    input.opposites = [];
-    input.opposites[1] = Phaser.RIGHT;
-    input.opposites[2] = Phaser.LEFT;
-    input.opposites[3] = Phaser.DOWN;
-    input.opposites[4] = Phaser.UP;
     input.cursors = [];
     input.attachCursors = function(state) {
         var cursorsKeys = state.input.keyboard.createCursorKeys();

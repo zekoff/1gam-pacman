@@ -1,4 +1,4 @@
-define(['phaser', 'const'], function(Phaser, Const) {
+define(['phaser', 'const', 'nav'], function(Phaser, Const, Nav) {
     var util = {};
     util.snapToTile = function(tile, entity) {
         if (typeof(entity) === 'undefined') entity = this;
@@ -39,26 +39,17 @@ define(['phaser', 'const'], function(Phaser, Const) {
                 break;
         }
     };
-    util.detectIntersection = function(tilePoint, map) {
-
+    util.detectExits = function(tilePoint, map) {
+        var exits = [];
+        Nav.directions.forEach(function(direction) {
+            if (util.isExitAvailable(tilePoint, map, direction))
+                exits.push(direction);
+        });
+        return exits;
     };
     util.isExitAvailable = function(tilePoint, map, direction) {
-        var target;
-        switch (direction) {
-            case Phaser.UP:
-                target = map.getTileAbove;
-                break;
-            case Phaser.DOWN:
-                target = map.getTileBelow;
-                break;
-            case Phaser.LEFT:
-                target = map.getTileLeft;
-                break;
-            case Phaser.RIGHT:
-                target = map.getTileRight;
-                break;
-        }
-        return !target.call(map, map.getLayerIndex(Const.COLLISION_LAYER),
+        var targets = [null, map.getTileLeft, map.getTileRight, map.getTileAbove, map.getTileBelow];
+        return !targets[direction].call(map, map.getLayerIndex(Const.COLLISION_LAYER),
             tilePoint.x, tilePoint.y).isInteresting(true);
     };
     util.atTurnPoint = function(tile, entity) {

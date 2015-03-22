@@ -6,6 +6,7 @@ define(['phaser', 'util', 'config'], function(Phaser, Util, Config) {
         state.physics.arcade.enable(this);
         this.anchor.set(0.5);
         this.body.bounce = 0;
+        this.body.setSize(30,30);
         this.direction = Phaser.DOWN;
         this.speed = Config.playerSpeed;
     };
