@@ -1,12 +1,12 @@
 define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Config, Util, Phaser, Nav) {
-    var Enemy = function(state, tilePoint, frame) {
-        Entity.call(this, state, tilePoint, frame);
-        this.speed = Config.playerSpeed * 0.3;
+    var Enemy = function(game, x, y, key, frame) {
+        Entity.call(this, game, x, y, key, frame);
+        this.speed = Config.playerSpeed * 0.5;
         this.tint = 0x000000;
     };
     Enemy.prototype = Object.create(Entity.prototype);
     Enemy.constructor = Enemy;
-    Enemy.prototype.seekPlayer = function(map, player) {
+    Enemy.prototype.moveToTarget = function(map, targetPoint) {
         if (!this.isAtTurnPoint()) return;
         var exits = Util.detectExits(this.getCurrentTilePoint(), map);
         var minimumDistance = Infinity;
@@ -29,7 +29,8 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
                     testPoint.y++;
                     break;
             }
-            var distance = Phaser.Math.distance(testPoint.x, testPoint.y, player.x, player.y);
+            var distance = Phaser.Math.distance(testPoint.x, testPoint.y,
+                targetPoint.x, targetPoint.y);
             if (distance < minimumDistance) {
                 minimumDistance = distance;
                 bestChoice = direction;
@@ -39,6 +40,9 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
             this.direction = bestChoice;
             this.snapToTile();
         }
+    };
+    Enemy.prototype.separate = function(map, enemiesGroup) {
+
     };
     return Enemy;
 });

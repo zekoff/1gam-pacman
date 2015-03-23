@@ -15,12 +15,15 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         map.createFromTiles(4, 0, 'dot', pickupsLayer, pickupsGroup);
         state.physics.arcade.enable(pickupsGroup);
         Input.attachCursors(state);
-        player = new Entity(state, new Phaser.Point(1, 1), 'badman');
-        state.add.existing(player);
+        // player = new Entity(state.game, 1, 1, 'badman');
+        // state.add.existing(player);
+        var playerGroup = state.add.group();
+        map.createFromObjects('player', 2, 'badman', null, true, false,
+            playerGroup, Entity);
+        player = playerGroup.getFirstAlive();
         enemiesGroup = state.add.group();
-        enemiesGroup.add(new Enemy(state, new Phaser.Point(18, 19), 'badman'));
-        enemiesGroup.add(new Enemy(state, new Phaser.Point(5, 21), 'badman'));
-        // enemiesGroup.add(new Enemy(state, new Phaser.Point(12, 17), 'badman'));
+        map.createFromObjects('enemies', 3, 'badman', null, true, false,
+            enemiesGroup, Enemy);
     };
     state.update = function() {
         // allow reversing direction any time
@@ -42,7 +45,7 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
             }
         }
         enemiesGroup.forEachAlive(function(enemy) {
-            enemy.seekPlayer(map, player);
+            enemy.moveToTarget(map, player);
         });
         state.physics.arcade.collide(player, collisionLayer);
         state.physics.arcade.collide(enemiesGroup, collisionLayer);
