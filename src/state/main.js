@@ -15,8 +15,6 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         map.createFromTiles(4, 0, 'dot', pickupsLayer, pickupsGroup);
         state.physics.arcade.enable(pickupsGroup);
         Input.attachCursors(state);
-        // player = new Entity(state.game, 1, 1, 'badman');
-        // state.add.existing(player);
         var playerGroup = state.add.group();
         map.createFromObjects('player', 2, 'badman', null, true, false,
             playerGroup, Entity);
@@ -24,6 +22,11 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         enemiesGroup = state.add.group();
         map.createFromObjects('enemies', 3, 'badman', null, true, false,
             enemiesGroup, Enemy);
+        Enemy.prototype.player = player;
+        Enemy.prototype.map = map;
+        enemiesGroup.forEachAlive(function(enemy) {
+            enemy.ai = 'ambush';
+        });
     };
     state.update = function() {
         // allow reversing direction any time
@@ -72,6 +75,7 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
             state.game.debug.text("Enemy 1 Y: " + enemiesGroup.getFirstAlive().y, 20, 160);
             state.game.debug.text("Direction: " + enemiesGroup.getFirstAlive().direction, 20, 180);
             state.game.debug.body(enemiesGroup.getFirstAlive());
+            state.game.debug.geom(enemiesGroup.getFirstAlive().targetPointDebug, '#00F');
         }
     };
     return state;

@@ -40,6 +40,36 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
             this.direction = bestChoice;
             this.snapToTile();
         }
+        this.updateVelocity();
+    };
+    Enemy.prototype.update = function() {
+        var targetPoint = null;
+        switch (this.ai) {
+            case 'ambush':
+                targetPoint = this.player.getCurrentTilePoint();
+                switch (this.player.direction) {
+                    case Phaser.LEFT:
+                        targetPoint.x -= 6;
+                        break;
+                    case Phaser.RIGHT:
+                        targetPoint.x += 6;
+                        break;
+                    case Phaser.UP:
+                        targetPoint.y -= 6;
+                        break;
+                    case Phaser.DOWN:
+                        targetPoint.y += 6;
+                        break;
+                }
+                targetPoint = Util.tileToWorld(targetPoint);
+                break;
+            case 'seek':
+            default:
+                targetPoint = this.player;
+                break;
+        }
+        this.targetPointDebug = targetPoint;
+        this.moveToTarget(this.map, targetPoint);
     };
     Enemy.prototype.separate = function(map, enemiesGroup) {
 

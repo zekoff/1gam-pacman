@@ -6,7 +6,10 @@ requirejs.config({
         }
     },
     paths: {
-        phaser: 'https://cdnjs.cloudflare.com/ajax/libs/phaser/2.2.2/phaser.min'
+        phaser: [
+            'https://cdnjs.cloudflare.com/ajax/libs/phaser/2.2.2/phaser.min',
+            'phaser.min'
+        ]
     }
 });
 requirejs(['phaser', 'state/load', 'config', 'const'],
@@ -16,6 +19,7 @@ requirejs(['phaser', 'state/load', 'config', 'const'],
         game.state.add('load', LoadState);
         game.state.start('load');
     },
-    function() {
+    function(error) {
+        console.log(error);
         document.write("Error during module loading.");
     });
