@@ -14,7 +14,7 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
         exits.forEach(function(direction) {
             if (direction === Nav.opposites[this.direction])
                 return; // don't allow about-faces
-            var testPoint = Util.tileToWorld(this.getCurrentTilePoint());
+            var testPoint = this.getCurrentTilePoint();
             switch (direction) {
                 case Phaser.LEFT:
                     testPoint.x--;
@@ -29,6 +29,7 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
                     testPoint.y++;
                     break;
             }
+            testPoint = Util.tileToWorld(testPoint);
             var distance = Phaser.Math.distance(testPoint.x, testPoint.y,
                 targetPoint.x, targetPoint.y);
             if (distance < minimumDistance) {
@@ -40,7 +41,6 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
             this.direction = bestChoice;
             this.snapToTile();
         }
-        this.updateVelocity();
     };
     Enemy.prototype.update = function() {
         var targetPoint = null;
@@ -49,16 +49,16 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
                 targetPoint = this.player.getCurrentTilePoint();
                 switch (this.player.direction) {
                     case Phaser.LEFT:
-                        targetPoint.x -= 6;
+                        targetPoint.x -= 4;
                         break;
                     case Phaser.RIGHT:
-                        targetPoint.x += 6;
+                        targetPoint.x += 4;
                         break;
                     case Phaser.UP:
-                        targetPoint.y -= 6;
+                        targetPoint.y -= 4;
                         break;
                     case Phaser.DOWN:
-                        targetPoint.y += 6;
+                        targetPoint.y += 4;
                         break;
                 }
                 targetPoint = Util.tileToWorld(targetPoint);
@@ -70,6 +70,7 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
         }
         this.targetPointDebug = targetPoint;
         this.moveToTarget(this.map, targetPoint);
+        this.updateVelocity();
     };
     Enemy.prototype.separate = function(map, enemiesGroup) {
 

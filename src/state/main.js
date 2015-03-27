@@ -24,9 +24,6 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
             enemiesGroup, Enemy);
         Enemy.prototype.player = player;
         Enemy.prototype.map = map;
-        enemiesGroup.forEachAlive(function(enemy) {
-            enemy.ai = 'ambush';
-        });
     };
     state.update = function() {
         // allow reversing direction any time
@@ -47,9 +44,9 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
                 player.snapToTile();
             }
         }
-        enemiesGroup.forEachAlive(function(enemy) {
-            enemy.moveToTarget(map, player);
-        });
+        // enemiesGroup.forEachAlive(function(enemy) {
+        //     enemy.moveToTarget(map, player);
+        // });
         state.physics.arcade.collide(player, collisionLayer);
         state.physics.arcade.collide(enemiesGroup, collisionLayer);
         state.physics.arcade.collide(player, pickupsGroup, function(player, pickup) {
@@ -74,6 +71,8 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
             state.game.debug.text("Enemy 1 X: " + enemiesGroup.getFirstAlive().x, 20, 140);
             state.game.debug.text("Enemy 1 Y: " + enemiesGroup.getFirstAlive().y, 20, 160);
             state.game.debug.text("Direction: " + enemiesGroup.getFirstAlive().direction, 20, 180);
+            state.game.debug.text("Velocity X: " + enemiesGroup.getFirstAlive().body.velocity.x, 20, 200);
+            state.game.debug.text("Velocity Y: " + enemiesGroup.getFirstAlive().body.velocity.y, 20, 220);
             state.game.debug.body(enemiesGroup.getFirstAlive());
             state.game.debug.geom(enemiesGroup.getFirstAlive().targetPointDebug, '#00F');
         }

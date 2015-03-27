@@ -30,38 +30,6 @@
                 {
                  "gid":3,
                  "height":0,
-                 "id":12,
-                 "name":"",
-                 "properties":
-                    {
-                     "ai":"ambush"
-                    },
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":640,
-                 "y":736
-                }, 
-                {
-                 "gid":3,
-                 "height":0,
-                 "id":13,
-                 "name":"",
-                 "properties":
-                    {
-                     "ai":"seek"
-                    },
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":160,
-                 "y":512
-                }, 
-                {
-                 "gid":3,
-                 "height":0,
                  "id":14,
                  "name":"",
                  "properties":
