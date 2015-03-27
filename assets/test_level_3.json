@@ -34,7 +34,7 @@
                  "name":"",
                  "properties":
                     {
-                     "ai":"wander"
+                     "ai":"flee"
                     },
                  "rotation":0,
                  "type":"",

@@ -76,6 +76,27 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav', 'const'], function(E
                 }
                 targetPoint = this.lastWanderTarget;
                 break;
+            case 'flee':
+                targetPoint = {};
+                targetPoint.x = this.player.x - this.x;
+                targetPoint.y = this.player.y - this.y;
+                targetPoint.x *= -1;
+                targetPoint.y *= -1;
+                var vectorLength = Math.sqrt(Math.pow(targetPoint.x, 2) +
+                    Math.pow(targetPoint.y, 2));
+                targetPoint.x /= vectorLength;
+                targetPoint.y /= vectorLength;
+                targetPoint.x *= 4;
+                targetPoint.y *= 4;
+                var enemyPoint = this.getCurrentTilePoint();
+                targetPoint = {
+                    x: enemyPoint.x + targetPoint.x,
+                    y: enemyPoint.y + targetPoint.y
+                };
+                targetPoint = Util.tileToWorld(targetPoint);
+                targetPoint = Util.getTilePoint(targetPoint);
+                targetPoint = Util.tileToWorld(targetPoint);
+                break;
             case 'seek':
             default:
                 targetPoint = this.player;
