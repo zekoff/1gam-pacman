@@ -44,9 +44,6 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
                 player.snapToTile();
             }
         }
-        // enemiesGroup.forEachAlive(function(enemy) {
-        //     enemy.moveToTarget(map, player);
-        // });
         state.physics.arcade.collide(player, collisionLayer);
         state.physics.arcade.collide(enemiesGroup, collisionLayer);
         state.physics.arcade.collide(player, pickupsGroup, function(player, pickup) {
@@ -68,13 +65,15 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         state.game.debug.body(player);
 
         if (enemiesGroup.getFirstAlive()) {
-            state.game.debug.text("Enemy 1 X: " + enemiesGroup.getFirstAlive().x, 20, 140);
-            state.game.debug.text("Enemy 1 Y: " + enemiesGroup.getFirstAlive().y, 20, 160);
-            state.game.debug.text("Direction: " + enemiesGroup.getFirstAlive().direction, 20, 180);
-            state.game.debug.text("Velocity X: " + enemiesGroup.getFirstAlive().body.velocity.x, 20, 200);
-            state.game.debug.text("Velocity Y: " + enemiesGroup.getFirstAlive().body.velocity.y, 20, 220);
-            state.game.debug.body(enemiesGroup.getFirstAlive());
-            state.game.debug.geom(enemiesGroup.getFirstAlive().targetPointDebug, '#00F');
+            var e = enemiesGroup.getFirstAlive();
+            state.game.debug.text("Enemy 1 X: " + e.x, 20, 140);
+            state.game.debug.text("Enemy 1 Y: " + e.y, 20, 160);
+            state.game.debug.text("Direction: " + e.direction, 20, 180);
+            state.game.debug.text("Velocity X: " + e.body.velocity.x, 20, 200);
+            state.game.debug.text("Velocity Y: " + e.body.velocity.y, 20, 220);
+            state.game.debug.text("AI: " + e.ai, 20, 240);
+            state.game.debug.body(e);
+            state.game.debug.geom(e.targetPointDebug, '#00F');
         }
     };
     return state;

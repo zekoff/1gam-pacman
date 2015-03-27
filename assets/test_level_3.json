@@ -34,7 +34,7 @@
                  "name":"",
                  "properties":
                     {
-                     "ai":"ambush"
+                     "ai":"wander"
                     },
                  "rotation":0,
                  "type":"",

@@ -1,4 +1,5 @@
-define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Config, Util, Phaser, Nav) {
+define(['object/entity', 'config', 'util', 'phaser', 'nav', 'const'], function(Entity, Config, Util, Phaser, Nav, Const) {
+    var rnd = new Phaser.RandomDataGenerator();
     var Enemy = function(game, x, y, key, frame) {
         Entity.call(this, game, x, y, key, frame);
         this.speed = Config.playerSpeed * 0.5;
@@ -42,6 +43,7 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
             this.snapToTile();
         }
     };
+    var targetUpdateCounter = 0;
     Enemy.prototype.update = function() {
         var targetPoint = null;
         switch (this.ai) {
@@ -62,6 +64,17 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav'], function(Entity, Co
                         break;
                 }
                 targetPoint = Util.tileToWorld(targetPoint);
+                break;
+            case 'wander':
+                if (--targetUpdateCounter < 0) {
+                    targetUpdateCounter = 300;
+                    this.lastWanderTarget = {
+                        x: rnd.between(0, Const.MAP_WIDTH),
+                        y: rnd.between(0, Const.MAP_HEIGHT)
+                    };
+                    this.lastWanderTarget = Util.tileToWorld(this.lastWanderTarget);
+                }
+                targetPoint = this.lastWanderTarget;
                 break;
             case 'seek':
             default:
