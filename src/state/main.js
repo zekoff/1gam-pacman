@@ -5,6 +5,7 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
     var collisionLayer;
     var pickupsGroup;
     var enemiesGroup;
+    var powerupsGroup;
     state.create = function() {
         map = state.add.tilemap('test');
         map.addTilesetImage('test_tiles', 'tiles');
@@ -24,6 +25,17 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
             enemiesGroup, Enemy);
         Enemy.prototype.player = player;
         Enemy.prototype.map = map;
+        powerupsGroup = state.add.group();
+        var powerupLocation = Util.tileToWorld({
+            x: 9,
+            y: 1
+        });
+        var powerup = new Phaser.Sprite(state.game, powerupLocation.x, powerupLocation.y, 'dot');
+        state.physics.arcade.enable(powerup);
+        powerup.tint = 0x00FF00;
+        powerup.anchor.set(0.5);
+        powerupsGroup.add(powerup);
+        player.poweredUp = false;
     };
     state.update = function() {
         // allow reversing direction any time
@@ -52,6 +64,13 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         state.physics.arcade.overlap(player, enemiesGroup, function(player, enemy) {
             player.kill();
             console.log("died");
+        });
+        state.physics.arcade.overlap(player, powerupsGroup, function(player, powerup) {
+            powerup.kill();
+            enemiesGroup.forEachAlive(function(enemy) {
+                enemy.ai = 'flee';
+                player.poweredUp = true;
+            });
         });
     };
     state.render = function() {
