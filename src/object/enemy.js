@@ -126,6 +126,9 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav', 'const'], function(E
         this.moveToTarget(this.map, targetPoint);
         this.updateVelocity();
     };
+    Enemy.prototype.reverseDirection = function() {
+        this.direction = Nav.opposites[this.direction];
+    };
     Enemy.prototype.separate = function(map, enemiesGroup) {
 
     };

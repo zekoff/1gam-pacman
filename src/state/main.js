@@ -62,15 +62,30 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
             pickup.kill();
         });
         state.physics.arcade.overlap(player, enemiesGroup, function(player, enemy) {
-            player.kill();
-            console.log("died");
+            if (!player.poweredUp) {
+                player.kill();
+                console.log("died");
+                return;
+            }
+            enemy.kill();
         });
         state.physics.arcade.overlap(player, powerupsGroup, function(player, powerup) {
             powerup.kill();
             enemiesGroup.forEachAlive(function(enemy) {
+                enemy.reverseDirection();
+                enemy.oldAi = enemy.ai;
                 enemy.ai = 'flee';
                 player.poweredUp = true;
             });
+            var timer = state.time.create();
+            timer.add(4000, function() {
+                player.poweredUp = false;
+                enemiesGroup.forEachAlive(function(enemy) {
+                    enemy.ai = enemy.oldAi;
+                    enemy.reverseDirection();
+                });
+            });
+            timer.start();
         });
     };
     state.render = function() {
