@@ -34,14 +34,15 @@
                  "name":"",
                  "properties":
                     {
-                     "ai":"flee"
+                     "ai":"waypoint",
+                     "waypoint":"27,24"
                     },
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":640,
-                 "y":736
+                 "x":864,
+                 "y":256
                 }, 
                 {
                  "gid":3,
@@ -66,7 +67,7 @@
                  "name":"",
                  "properties":
                     {
-                     "ai":"seek"
+                     "ai":"ambush"
                     },
                  "rotation":0,
                  "type":"",

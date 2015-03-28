@@ -47,6 +47,26 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav', 'const'], function(E
     Enemy.prototype.update = function() {
         var targetPoint = null;
         switch (this.ai) {
+            case 'waypoint':
+                if (typeof(this.returningToStartPoint) === 'undefined')
+                    this.returningToStartPoint = false;
+                if (!this.returningToStartPoint) {
+                    var waypointSplit = this.waypoint.split(",");
+                    targetPoint = {
+                        x: waypointSplit[0],
+                        y: waypointSplit[1]
+                    };
+                }
+                else {
+                    targetPoint = this.startPoint;
+                }
+                var currentPoint = this.getCurrentTilePoint();
+                var isAtTargetPoint = targetPoint.x == currentPoint.x &&
+                    targetPoint.y == currentPoint.y;
+                if (this.isAtTurnPoint() && isAtTargetPoint)
+                    this.returningToStartPoint = !this.returningToStartPoint;
+                targetPoint = Util.tileToWorld(targetPoint);
+                break;
             case 'ambush':
                 targetPoint = this.player.getCurrentTilePoint();
                 switch (this.player.direction) {
