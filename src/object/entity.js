@@ -11,7 +11,6 @@ define(['phaser', 'util', 'config'], function(Phaser, Util, Config) {
         this.direction = Phaser.DOWN;
         this.speed = Config.playerSpeed;
         this.startPoint = tilePoint;
-        console.log(tilePoint.x+','+tilePoint.y);
     };
     Entity.prototype = Object.create(Phaser.Sprite.prototype);
     Entity.prototype.constructor = Entity;

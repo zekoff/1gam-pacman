@@ -6,5 +6,6 @@ define(function() {
             return;
         }
         enemy.kill();
+        // start timer to add defeated enemy back into map (maybe)
     };
 });

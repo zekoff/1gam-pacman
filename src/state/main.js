@@ -1,4 +1,4 @@
-define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'object/enemy', 'callback/activatePowerup', 'callback/playerEnemyCollision'], function(Phaser, Const, Config, Util, Entity, Input, Nav, Enemy, activatePowerup, playerEnemyCollision) {
+define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'object/enemy', 'callback/activatePowerup', 'callback/playerEnemyCollision','object/powerup'], function(Phaser, Const, Config, Util, Entity, Input, Nav, Enemy, activatePowerup, playerEnemyCollision, Powerup) {
     var state = new Phaser.State();
     var player;
     var map;
@@ -26,15 +26,18 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         Enemy.prototype.player = player;
         Enemy.prototype.map = map;
         powerupsGroup = state.add.group();
+        // ** Remove when powerup layer is added
         var powerupLocation = Util.tileToWorld({
-            x: 9,
-            y: 1
+            x: 11,
+            y: 16
         });
         var powerup = new Phaser.Sprite(state.game, powerupLocation.x, powerupLocation.y, 'dot');
         state.physics.arcade.enable(powerup);
         powerup.tint = 0x00FF00;
         powerup.anchor.set(0.5);
         powerupsGroup.add(powerup);
+        // ** End remove when powerup layer is added
+        // map.createFromObjects('powerups', 0, 'dot', null, false, powerupsGroup, Powerup);
         player.poweredUp = false;
     };
     state.update = function() {
