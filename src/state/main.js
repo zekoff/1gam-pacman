@@ -1,4 +1,4 @@
-define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'object/enemy'], function(Phaser, Const, Config, Util, Entity, Input, Nav, Enemy) {
+define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'object/enemy', 'callback/activatePowerup', 'callback/playerEnemyCollision'], function(Phaser, Const, Config, Util, Entity, Input, Nav, Enemy, activatePowerup, playerEnemyCollision) {
     var state = new Phaser.State();
     var player;
     var map;
@@ -62,30 +62,10 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
             pickup.kill();
         });
         state.physics.arcade.overlap(player, enemiesGroup, function(player, enemy) {
-            if (!player.poweredUp) {
-                player.kill();
-                console.log("died");
-                return;
-            }
-            enemy.kill();
+            playerEnemyCollision(player, enemy);
         });
         state.physics.arcade.overlap(player, powerupsGroup, function(player, powerup) {
-            powerup.kill();
-            enemiesGroup.forEachAlive(function(enemy) {
-                enemy.reverseDirection();
-                enemy.oldAi = enemy.ai;
-                enemy.ai = 'flee';
-                player.poweredUp = true;
-            });
-            var timer = state.time.create();
-            timer.add(4000, function() {
-                player.poweredUp = false;
-                enemiesGroup.forEachAlive(function(enemy) {
-                    enemy.ai = enemy.oldAi;
-                    enemy.reverseDirection();
-                });
-            });
-            timer.start();
+            activatePowerup(player, powerup, enemiesGroup, state);
         });
     };
     state.render = function() {
