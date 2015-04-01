@@ -3,7 +3,7 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav', 'const'], function(E
     var Enemy = function(game, x, y, key, frame) {
         Entity.call(this, game, x, y, key, frame);
         this.speed = Config.playerSpeed * 0.5;
-        this.tint = 0x000000;
+        this.tint = 0xFF0000;
     };
     Enemy.prototype = Object.create(Entity.prototype);
     Enemy.constructor = Enemy;
@@ -43,7 +43,6 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav', 'const'], function(E
             this.snapToTile();
         }
     };
-    var targetUpdateCounter = 0;
     Enemy.prototype.update = function() {
         var targetPoint = null;
         switch (this.ai) {
@@ -86,8 +85,10 @@ define(['object/entity', 'config', 'util', 'phaser', 'nav', 'const'], function(E
                 targetPoint = Util.tileToWorld(targetPoint);
                 break;
             case 'wander':
-                if (--targetUpdateCounter < 0) {
-                    targetUpdateCounter = 300;
+                if (typeof(this.targetUpdateCounter) === 'undefined')
+                    this.targetUpdateCounter = 0;
+                if (--this.targetUpdateCounter < 0) {
+                    this.targetUpdateCounter = 300;
                     this.lastWanderTarget = {
                         x: rnd.between(0, Const.MAP_WIDTH),
                         y: rnd.between(0, Const.MAP_HEIGHT)

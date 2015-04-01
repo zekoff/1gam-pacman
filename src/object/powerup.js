@@ -8,6 +8,7 @@ define(['phaser', 'util', 'config'], function(Phaser, Util, Config) {
         this.anchor.set(0.5);
         this.body.bounce = 0;
         this.body.setSize(30, 30);
+        this.tint = 0x00FF00;
     };
     Powerup.prototype = Object.create(Phaser.Sprite.prototype);
     Powerup.prototype.constructor = Powerup;

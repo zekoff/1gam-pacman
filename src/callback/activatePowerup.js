@@ -8,13 +8,15 @@ define(['phaser'], function(Phaser) {
             enemy.oldAi = enemy.ai;
             enemy.ai = 'flee';
             player.poweredUp = true;
+            enemy.tint = 0x000000;
         });
         powerupTimer.stop();
-        powerupTimer.add(4000, function() {
+        powerupTimer.add(7000, function() {
             player.poweredUp = false;
             enemiesGroup.forEachAlive(function(enemy) {
                 enemy.ai = enemy.oldAi;
                 enemy.reverseDirection();
+                enemy.tint = 0xFF0000;
             });
         });
         powerupTimer.start();

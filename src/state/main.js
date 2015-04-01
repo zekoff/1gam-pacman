@@ -1,4 +1,4 @@
-define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'object/enemy', 'callback/activatePowerup', 'callback/playerEnemyCollision','object/powerup'], function(Phaser, Const, Config, Util, Entity, Input, Nav, Enemy, activatePowerup, playerEnemyCollision, Powerup) {
+define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'object/enemy', 'callback/activatePowerup', 'callback/playerEnemyCollision', 'object/powerup'], function(Phaser, Const, Config, Util, Entity, Input, Nav, Enemy, activatePowerup, playerEnemyCollision, Powerup) {
     var state = new Phaser.State();
     var player;
     var map;
@@ -26,18 +26,8 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         Enemy.prototype.player = player;
         Enemy.prototype.map = map;
         powerupsGroup = state.add.group();
-        // ** Remove when powerup layer is added
-        var powerupLocation = Util.tileToWorld({
-            x: 11,
-            y: 16
-        });
-        var powerup = new Phaser.Sprite(state.game, powerupLocation.x, powerupLocation.y, 'dot');
-        state.physics.arcade.enable(powerup);
-        powerup.tint = 0x00FF00;
-        powerup.anchor.set(0.5);
-        powerupsGroup.add(powerup);
-        // ** End remove when powerup layer is added
-        // map.createFromObjects('powerups', 0, 'dot', null, false, powerupsGroup, Powerup);
+        map.createFromObjects('powerups', 2, 'dot', null, true, false,
+            powerupsGroup, Powerup);
         player.poweredUp = false;
     };
     state.update = function() {
@@ -70,28 +60,29 @@ define(['phaser', 'const', 'config', 'util', 'object/entity', 'input', 'nav', 'o
         state.physics.arcade.overlap(player, powerupsGroup, function(player, powerup) {
             activatePowerup(player, powerup, enemiesGroup, state);
         });
+        if (pickupsGroup.countLiving() === 0) pickupsGroup.callAll('revive');
     };
-    state.render = function() {
-        var currentTile = player.getCurrentTilePoint();
-        state.game.debug.geom(Util.tileToWorld(currentTile), '#F00');
-        state.game.debug.text("Player X: " + player.x, 20, 20);
-        state.game.debug.text("Player Y: " + player.y, 20, 40);
-        state.game.debug.text("Direction: " + player.direction, 20, 60);
-        state.game.debug.text("Current Tile X: " + currentTile.x, 20, 80);
-        state.game.debug.text("Current Tile Y: " + currentTile.y, 20, 100);
-        state.game.debug.body(player);
+    // state.render = function() {
+    //     var currentTile = player.getCurrentTilePoint();
+    //     state.game.debug.geom(Util.tileToWorld(currentTile), '#F00');
+    //     state.game.debug.text("Player X: " + player.x, 20, 20);
+    //     state.game.debug.text("Player Y: " + player.y, 20, 40);
+    //     state.game.debug.text("Direction: " + player.direction, 20, 60);
+    //     state.game.debug.text("Current Tile X: " + currentTile.x, 20, 80);
+    //     state.game.debug.text("Current Tile Y: " + currentTile.y, 20, 100);
+    //     state.game.debug.body(player);
 
-        if (enemiesGroup.getFirstAlive()) {
-            var e = enemiesGroup.getFirstAlive();
-            state.game.debug.text("Enemy 1 X: " + e.x, 20, 140);
-            state.game.debug.text("Enemy 1 Y: " + e.y, 20, 160);
-            state.game.debug.text("Direction: " + e.direction, 20, 180);
-            state.game.debug.text("Velocity X: " + e.body.velocity.x, 20, 200);
-            state.game.debug.text("Velocity Y: " + e.body.velocity.y, 20, 220);
-            state.game.debug.text("AI: " + e.ai, 20, 240);
-            state.game.debug.body(e);
-            state.game.debug.geom(e.targetPointDebug, '#00F');
-        }
-    };
+    //     if (enemiesGroup.getFirstAlive()) {
+    //         var e = enemiesGroup.getFirstAlive();
+    //         state.game.debug.text("Enemy 1 X: " + e.x, 20, 140);
+    //         state.game.debug.text("Enemy 1 Y: " + e.y, 20, 160);
+    //         state.game.debug.text("Direction: " + e.direction, 20, 180);
+    //         state.game.debug.text("Velocity X: " + e.body.velocity.x, 20, 200);
+    //         state.game.debug.text("Velocity Y: " + e.body.velocity.y, 20, 220);
+    //         state.game.debug.text("AI: " + e.ai, 20, 240);
+    //         state.game.debug.body(e);
+    //         state.game.debug.geom(e.targetPointDebug, '#00F');
+    //     }
+    // };
     return state;
 });
